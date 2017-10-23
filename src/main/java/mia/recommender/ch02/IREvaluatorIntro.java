@@ -1,5 +1,6 @@
 package mia.recommender.ch02;
 
+import mia.utils.ResourceUtil;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.IRStatistics;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
@@ -19,40 +20,43 @@ import java.io.File;
 
 class IREvaluatorIntro {
 
-  private IREvaluatorIntro() {
-  }
+    private IREvaluatorIntro() {
+    }
 
-  public static void main(String[] args) throws Exception {
-    RandomUtils.useTestSeed();
-	File modelFile = null;
-	if (args.length > 0)
-		modelFile = new File(args[0]);
-	if(modelFile == null || !modelFile.exists())
-		modelFile = new File("intro.csv");
-	if(!modelFile.exists()) {
-		System.err.println("Please, specify name of file, or put file 'input.csv' into current directory!");
-		System.exit(1);
-	}
-    DataModel model = new FileDataModel(modelFile);
+    public static void main(String[] args) throws Exception {
+        RandomUtils.useTestSeed();
 
-    RecommenderIRStatsEvaluator evaluator =
-      new GenericRecommenderIRStatsEvaluator();
-    // Build the same recommender for testing that we did last time:
-    RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
-      @Override
-      public Recommender buildRecommender(DataModel model) throws TasteException {
-        UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
-        UserNeighborhood neighborhood =
-          new NearestNUserNeighborhood(2, similarity, model);
-        return new GenericUserBasedRecommender(model, neighborhood, similarity);
-      }
-    };
-    // Evaluate precision and recall "at 2":
-    IRStatistics stats = evaluator.evaluate(recommenderBuilder,
-                                            null, model, null, 2,
-                                            GenericRecommenderIRStatsEvaluator.CHOOSE_THRESHOLD,
-                                            1.0);
-    System.out.println(stats.getPrecision());
-    System.out.println(stats.getRecall());
-  }
+        String introCsv = ResourceUtil.getResource("ch02/intro.csv");
+
+        File modelFile = null;
+        if (args.length > 0)
+            modelFile = new File(args[0]);
+        if (modelFile == null || !modelFile.exists())
+            modelFile = new File(introCsv);
+        if (!modelFile.exists()) {
+            System.err.println("Please, specify name of file, or put file 'input.csv' into current directory!");
+            System.exit(1);
+        }
+        DataModel model = new FileDataModel(modelFile);
+
+        RecommenderIRStatsEvaluator evaluator =
+                new GenericRecommenderIRStatsEvaluator();
+        // Build the same recommender for testing that we did last time:
+        RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
+            @Override
+            public Recommender buildRecommender(DataModel model) throws TasteException {
+                UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
+                UserNeighborhood neighborhood =
+                        new NearestNUserNeighborhood(2, similarity, model);
+                return new GenericUserBasedRecommender(model, neighborhood, similarity);
+            }
+        };
+        // Evaluate precision and recall "at 2":
+        IRStatistics stats = evaluator.evaluate(recommenderBuilder,
+                null, model, null, 2,
+                GenericRecommenderIRStatsEvaluator.CHOOSE_THRESHOLD,
+                1.0);
+        System.out.println(stats.getPrecision());
+        System.out.println(stats.getRecall());
+    }
 }

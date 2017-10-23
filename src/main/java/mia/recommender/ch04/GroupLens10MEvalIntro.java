@@ -1,5 +1,6 @@
 package mia.recommender.ch04;
 
+import mia.utils.ResourceUtil;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.eval.RecommenderBuilder;
 import org.apache.mahout.cf.taste.eval.RecommenderEvaluator;
@@ -17,25 +18,28 @@ import java.io.File;
 
 final class GroupLens10MEvalIntro {
 
-  private GroupLens10MEvalIntro() {
-  }
+    private GroupLens10MEvalIntro() {
+    }
 
-  public static void main(String[] args) throws Exception {
-    DataModel model = new GroupLensDataModel(new File("ratings.dat"));
+    public static void main(String[] args) throws Exception {
 
-    RecommenderEvaluator evaluator =
-      new AverageAbsoluteDifferenceRecommenderEvaluator();
-    RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
-      @Override
-      public Recommender buildRecommender(DataModel model) throws TasteException {
-        UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
-        UserNeighborhood neighborhood =
-          new NearestNUserNeighborhood(100, similarity, model);
-        return new GenericUserBasedRecommender(model, neighborhood, similarity);
-      }
-    };
-    double score = evaluator.evaluate(recommenderBuilder, null, model, 0.95, 0.05);
-    System.out.println(score);
-  }
+        String ratingsDat = ResourceUtil.getResource("ch04/ratings.dat");
+
+        DataModel model = new GroupLensDataModel(new File(ratingsDat));
+
+        RecommenderEvaluator evaluator =
+                new AverageAbsoluteDifferenceRecommenderEvaluator();
+        RecommenderBuilder recommenderBuilder = new RecommenderBuilder() {
+            @Override
+            public Recommender buildRecommender(DataModel model) throws TasteException {
+                UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
+                UserNeighborhood neighborhood =
+                        new NearestNUserNeighborhood(100, similarity, model);
+                return new GenericUserBasedRecommender(model, neighborhood, similarity);
+            }
+        };
+        double score = evaluator.evaluate(recommenderBuilder, null, model, 0.95, 0.05);
+        System.out.println(score);
+    }
 
 }

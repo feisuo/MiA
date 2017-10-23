@@ -1,5 +1,6 @@
 package mia.recommender.ch02;
 
+import mia.utils.ResourceUtil;
 import org.apache.mahout.cf.taste.impl.model.file.*;
 import org.apache.mahout.cf.taste.impl.neighborhood.*;
 import org.apache.mahout.cf.taste.impl.recommender.*;
@@ -17,11 +18,14 @@ class RecommenderIntro {
   }
 
   public static void main(String[] args) throws Exception {
+
+      String introCsv = ResourceUtil.getResource("ch02/intro.csv");
+
 	  File modelFile = null;
 	  if (args.length > 0)
 		  modelFile = new File(args[0]);
 	  if(modelFile == null || !modelFile.exists())
-		  modelFile = new File("intro.csv");
+		  modelFile = new File(introCsv);
 	  if(!modelFile.exists()) {
 		  System.err.println("Please, specify name of file, or put file 'input.csv' into current directory!");
 		  System.exit(1);

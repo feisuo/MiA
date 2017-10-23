@@ -1,5 +1,6 @@
 package mia.recommender.ch04;
 
+import mia.utils.ResourceUtil;
 import org.apache.mahout.cf.taste.example.grouplens.GroupLensDataModel;
 import org.apache.mahout.cf.taste.impl.eval.LoadEvaluator;
 import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
@@ -14,17 +15,20 @@ import java.io.File;
 
 class GroupLensDataModelIntro {
 
-  private GroupLensDataModelIntro() {
-  }
+    private GroupLensDataModelIntro() {
+    }
 
-  public static void main(String[] args) throws Exception {
-    DataModel model = new GroupLensDataModel(new File("ratings.dat"));
-    UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
-    UserNeighborhood neighborhood =
-      new NearestNUserNeighborhood(100, similarity, model);
-    Recommender recommender =
-      new GenericUserBasedRecommender(model, neighborhood, similarity);
-    LoadEvaluator.runLoad(recommender);
-  }
+    public static void main(String[] args) throws Exception {
+
+        String ratingsDat = ResourceUtil.getResource("ch04/ratings.dat");
+
+        DataModel model = new GroupLensDataModel(new File(ratingsDat));
+        UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
+        UserNeighborhood neighborhood =
+                new NearestNUserNeighborhood(100, similarity, model);
+        Recommender recommender =
+                new GenericUserBasedRecommender(model, neighborhood, similarity);
+        LoadEvaluator.runLoad(recommender);
+    }
 
 }
